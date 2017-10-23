@@ -17,7 +17,6 @@ const idsSchema = new mongoose.Schema({
 	statis_id: Number,
 	announce_id:Number,
 });
-
 const Ids = mongoose.model('Ids', idsSchema);
 
 Ids.findOne((err, data) => {

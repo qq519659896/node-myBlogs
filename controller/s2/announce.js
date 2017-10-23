@@ -17,12 +17,9 @@ class announce extends baseComponent{
 						try{
 							if(!content){
 								throw new Error('输入内容为空');
-							}else if(!type && type != 0){
-								throw new Error('输入内容为空');
 							}else if(!user_id){
 								throw new Error('用户为空');
 							}
-
 						}catch(err){
 								console.log('参数错误',err);
 								res.send({
@@ -31,14 +28,17 @@ class announce extends baseComponent{
 									message: err.message
 								})
 						}
-						
 						const announce_id = await this.getId('announce_id');
 						const announce_time = dtime().format('YYYY-MM-DD HH:mm');
 						const update_time = dtime().format('YYYY-MM-DD HH:mm');
-						const newAnnounce = {user_id,type,content,img,announce_id,announce_time};
+						const newAnnounce = {user_id,type,content,announce_id,announce_time,update_time};
 						const creatAnnounce = new AnnounceModel(newAnnounce);
 						const resAnnounce = await creatAnnounce.save();
-						
+						res.send({
+								status:1,
+								type: 'SUCCESS',
+								data:resAnnounce
+						});
 				})
 				
 
@@ -49,6 +49,5 @@ class announce extends baseComponent{
 		async del(){
 
 		}
-
-
 }
+export default new announce()
