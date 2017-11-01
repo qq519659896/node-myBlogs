@@ -10,8 +10,10 @@ import expressWinston from 'express-winston';
 import path from 'path';
 import history from 'connect-history-api-fallback';
 import Statistic from './middlewares/statistic'
+import bodyParser from 'body-parser';
 
 const app = express();
+
 
 app.all('*', (req, res, next) => {
 	res.header("Access-Control-Allow-Origin", req.headers.origin || '*');
@@ -25,6 +27,9 @@ app.all('*', (req, res, next) => {
 	    next();
 	}
 });
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}))
 
 app.use(Statistic.apiRecord)
 const MongoStore = connectMongo(session);

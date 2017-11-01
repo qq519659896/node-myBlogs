@@ -8,7 +8,7 @@ const announceSchema = new Schema({
 	announce_id: Number,
 	user_id: String,
 	content:String,
-	anounce_time:String,
+	announce_time:String,
 	type:{type:Number,default:0},
 	profect_number:{type:Number,default:0},
 	comment_number:{type:Number,default:0},

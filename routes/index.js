@@ -14,6 +14,7 @@ import shopping from './shopping'
 import promotion from './promotion'
 import s2 from './s2'
 import s1 from './s1'
+import file from './file'
 export default app => {
 	// app.get('/', (req, res, next) => {
 	// 	res.redirect('/');
@@ -32,4 +33,5 @@ export default app => {
 	app.use('/promotion', promotion);
 	app.use('/s1',s1);
 	app.use('/s2',s2);
+	app.use('/file',file);
 }
