@@ -50,7 +50,6 @@ class User extends baseComponent{
 						})
 					}
 			})
-
 		}
 		async loginOut() {
 
@@ -80,7 +79,6 @@ class User extends baseComponent{
 								const createUser = new UserModel(newUser);
 								const userinfo = await createUserInfo.save();
 								const newuser = await createUser.save();
-								await createUser.save();
 								req.session.user_id = user_id;
 								res.send(userinfo);
 						}else{
@@ -91,8 +89,8 @@ class User extends baseComponent{
 							return 
 						}
 				})
-
 		}
+
 		Md5 (password){
 			const md5 = crypto.createHash('md5');
 			return md5.update(password).digest('base64');

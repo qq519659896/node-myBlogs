@@ -12,7 +12,7 @@ class announce extends baseComponent{
 		  super();
 		  this.add = this.add.bind(this);
 		}
-		async add(req,res,next){
+		async addAnnounce(req,res,next){
 				const form = new formidable.IncomingForm();
 				form.parse(req,async (err, fields, files) => {
 						const {content,type,img,user_id} = fields;
@@ -46,20 +46,17 @@ class announce extends baseComponent{
 						});
 
 				})
-				
-
 		}
-		async getAnnounceList(){
+		async getAnnounceList(req,res,next){
 				const params = req.body;
 				const {PageIndex = 1,PageCount = 10,StartDate,EndDate,Sort,OrderType} = params;
 				try{
-						const Rows = await AnnounceModel.find().limit(Number(PageCount)).skip((Number(PageIndex)-1)*Number(PageCount));
-						const Total = await AnnounceModel.count();
-						
+						const Rows = await AnnounceModel.find({is_del:false}).limit(Number(PageCount)).skip((Number(PageIndex)-1)*Number(PageCount));
+						const Total = await AnnounceModel.count();	
 				}catch(err){
 						console.log('参数错误',err);
 						res.send({
-							status:0,
+							status:2,
 							type:"FAIL",
 							msg:err
 						})
@@ -72,28 +69,68 @@ class announce extends baseComponent{
 						total:Total
 				})
 		}
-		async updateAnnounce(){
-				const {announce_id} = req.body;
+		async updateAnnounce(req,res,next){
 				const form = new formidable.IncomingForm();
 				form.parse(req,async (err, fields, files) => {
 						if(err){
-							 res.send({
-							 		status:0,
-							 		type:'QUERY_FAIL',
-							 		msg:'表单信息错误'
-							 })
-							return 
+						  res.send({
+						 		status:2,
+						 		msg:'表单信息错误',
+						  })
+							return;
 						}
-						const {type,content,announce_id} = fields;
+						const update_time = dtime().format('YYYY-MM-DD HH:mm');
+						const { type, announce_id, content, profect_number, comment_number, transmit_number } = fields;
+						if(!announce_id) {
+							res.send({
+								status:2,
+								msg:'参数错误',
+							})
+							return; 
+						}
+						const newData = { type, content, profect_number, comment_number, transmit_number, update_time };
+						for(var val in newData){
+							if(newData[val] === undefined) delete newData[val];
+						}
+						try{
+							await AnnounceModel.findOneAndUpdate({announce_id},{$set:newData});
+							res.send({
+								status:1,
+								msg:'更新成功'
+							})
+						}catch(err) {
+							console.log('数据库错误',err);
+							res.send({
+								status:3,
+								msg:'数据库错误',
+							})
+							return; 
+						}
 				})
-				try{
-
-				}catch(err){
-
-				}
+				
 		}
-		async delAnnounce(){
-
+		async delAnnounce(req,res,next){
+				const {announce_id} = req.query;
+				if(!announce_id){
+						res.send({
+								status:2,
+								msg:'参数错误',
+						})
+						return 
+				}
+				try{
+						await AnnounceModel.findOneAndUpdate({announce_id},{$set:{is_del:true}});
+						res.send({
+								status:1,
+								msg:'删除成功'
+						})
+				}catch(err) {
+						console.log('数据库错误',err);
+						res.send({
+								status:2,
+								msg:'数据库错误'
+						})
+				} 
 		}
 		//测试接口
 		async getList(req,res,next) {
@@ -105,7 +142,6 @@ class announce extends baseComponent{
 				console.log(searchObj);
 				try{
 					const {PageIndex,PageCount,StartDate,EndDate,Sort,OrderType} = searchObj;
-					//Number(PageCount)   Number((PageIndex-1)*PageCount)
 					const Rows = await TestListModel.find().sort({updata_time:-1}).limit(Number(PageCount)).skip(Number((PageIndex-1)*PageCount));
 					const Counts = await TestListModel.count();
 					console.log(Rows);
@@ -131,16 +167,14 @@ class announce extends baseComponent{
 				const form = new formidable.IncomingForm();
 				form.parse(req, async (err, fields, files) => {
 						const {custom,status,sales_name,folio,sn,product_code} = fields;
-
 						const updata_time = dtime().format('YYYY-MM-DD HH:mm');
 						const newData = {custom,status,sales_name,folio,sn,product_code,updata_time};
 						const createTestList = new TestListModel(newData);
 						const resData = await createTestList.save();
-
 						res.send({
 							status:1,
 							type:'SUCCESS',
-							data:resData						
+							data:resData,			
 						});
 				})
 		}

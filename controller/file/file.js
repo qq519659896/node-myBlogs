@@ -63,13 +63,7 @@ class onLoad extends baseComponent{
 										})
 										return 
 								}
-						})
-						//const original_link;
-						
-						//const creatFileModel = new FileModel({business_id,original_link,file_type,file_name,file_size,update_time});
-						//const resFile = await creatFileModel.save();
-
-						
+						})		
 				})
 		}
 		async downLoad(req,res,next) {
