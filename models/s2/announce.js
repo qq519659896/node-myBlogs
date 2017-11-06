@@ -9,7 +9,7 @@ const announceSchema = new Schema({
 	user_id: String,
 	content:String,
 	announce_time:String,
-	type:{type:Number,default:0},
+	type:{type:Number,default:1},  //type: 1为短文本状态，2为短文本加图片， 3 为文章
 	profect_number:{type:Number,default:0},
 	comment_number:{type:Number,default:0},
 	transmit_number:{type:Number,default:0},

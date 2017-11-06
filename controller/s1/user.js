@@ -90,7 +90,6 @@ class User extends baseComponent{
 						}
 				})
 		}
-
 		Md5 (password){
 			const md5 = crypto.createHash('md5');
 			return md5.update(password).digest('base64');
@@ -99,6 +98,7 @@ class User extends baseComponent{
 			const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
 			return newpassword
 		}
+
 }
 
 export default new User()
