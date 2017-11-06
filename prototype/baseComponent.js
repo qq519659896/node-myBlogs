@@ -175,11 +175,15 @@ export default class BaseComponent {
 			    if(!err) {  
 			    	resolve(ret.key)
 			    } else {
-			    	console.log('图片上传至七牛失败', err);
+			    	console.log('图片上传失败', err);
 			    	reject(err)
 			    }
 		  	});
 
 		})
-	}	
+	}
+	randomNumber() {
+			return  parseInt(Math.random() * 8999 +10000) + dtime().format('YYYYMMDDHHmm');
+	}
+
 }

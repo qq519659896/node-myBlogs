@@ -5,12 +5,13 @@ import dtime from 'time-formater'
 import baseComponent from '../../prototype/baseComponent'
 import AnnounceModel from '../../models/s2/announce'
 import TestListModel from '../../models/s2/testList'
-
-
+import fs from 'fs'
+import {rootPath} from '../../config/default'
 class announce extends baseComponent{
 		constructor(req,res,next){
 		  super();
-		  this.add = this.add.bind(this);
+		  this.addAnnounce = this.addAnnounce.bind(this);
+
 		}
 		async addAnnounce(req,res,next){
 				const form = new formidable.IncomingForm();
@@ -32,19 +33,40 @@ class announce extends baseComponent{
 								})
 								return 
 						}
-						const announce_id = await this.getId('announce_id');
-						const announce_time = dtime().format('YYYY-MM-DD HH:mm');
-						const update_time = dtime().format('YYYY-MM-DD HH:mm');
-						const newAnnounce = {user_id,type,content,announce_id,announce_time,update_time};
-						const creatAnnounce = new AnnounceModel(newAnnounce);
-						const resAnnounce = await creatAnnounce.save();
-						console.log(announce_time,update_time);
-						res.send({
-								status:1,
-								type: 'SUCCESS',
-								data:resAnnounce
-						});
+						// if(content.length > 200 && type === 1){
+						// 		fs.writeFile(`${rootPath}`)
+						// }
+						try{
+								const announce_id = await this.getId('announce_id');
+								const announce_time = dtime().format('YYYY-MM-DD HH:mm');
+								const update_time = dtime().format('YYYY-MM-DD HH:mm');
+								//内容为文章的时候保存text文件
+								if(content.length > 200 && type === 1){
+									fs.writeFile(`${rootPath}/${this.randomNumber()}.text`,content , (err) => {
+											if(err){
+													throw new Error(err)
+													return 
+											}
+										
+									});
+								}
 
+								const newAnnounce = { user_id, type, content, announce_id, announce_time, update_time };
+								const creatAnnounce = new AnnounceModel(newAnnounce);
+								const resAnnounce = await creatAnnounce.save();
+								console.log(announce_time,update_time);
+								res.send({
+										status:1,
+										type: 'SUCCESS',
+										data:resAnnounce
+								});
+						} catch (err) {
+								console.log('数据库错误',err);
+								res.send({
+										status:3,
+										msg:'数据库错误'
+								})
+						}
 				})
 		}
 		async getAnnounceList(req,res,next){
