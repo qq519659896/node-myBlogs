@@ -32,19 +32,26 @@ class announce extends baseComponent{
 								})
 								return 
 						}
-						const announce_id = await this.getId('announce_id');
-						const announce_time = dtime().format('YYYY-MM-DD HH:mm');
-						const update_time = dtime().format('YYYY-MM-DD HH:mm');
-						const newAnnounce = {user_id,type,content,announce_id,announce_time,update_time};
-						const creatAnnounce = new AnnounceModel(newAnnounce);
-						const resAnnounce = await creatAnnounce.save();
-						console.log(announce_time,update_time);
-						res.send({
-								status:1,
-								type: 'SUCCESS',
-								data:resAnnounce
-						});
-
+						try{
+								const announce_id = await this.getId('announce_id');
+								const announce_time = dtime().format('YYYY-MM-DD HH:mm');
+								const update_time = dtime().format('YYYY-MM-DD HH:mm');
+								const newAnnounce = {user_id,type,content,announce_id,announce_time,update_time};
+								const creatAnnounce = new AnnounceModel(newAnnounce);
+								const resAnnounce = await creatAnnounce.save();
+								console.log(announce_time,update_time);
+								res.send({
+										status:1,
+										type: 'SUCCESS',
+										data:resAnnounce
+								});
+						} catch (err) {
+								console.log('数据库错误',err);
+								res.send({
+										status:3,
+										msg:'数据库错误'
+								})
+						}
 				})
 		}
 		async getAnnounceList(req,res,next){
