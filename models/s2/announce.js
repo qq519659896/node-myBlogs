@@ -15,12 +15,13 @@ const announceSchema = new Schema({
 	transmit_number:{type:Number,default:0},
 	is_del:{type: Boolean, default: false},
 	update_time:String,
+	txt_url:String,
 	img:[
 			{
-				original_link:{type:String,default:''},
-				thumbnail_link:{type:String,default:''},
-				is_del:{type:Boolean,default:false},
-				upload_time:{type:String,default:''},
+				original_link:{ type: String, default: ''},
+				thumbnail_link:{ type: String, default: ''},
+				is_del:{ type: Boolean, default:false},
+				upload_time:{ type: String, default: ''},
 			}
 	]
 })

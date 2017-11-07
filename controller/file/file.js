@@ -5,10 +5,19 @@ import dtime from 'time-formater'
 import baseComponent from '../../prototype/baseComponent'
 import FileModel from '../../models/file/file'
 import path from 'path'
-import fs from 'fs' 
+import fs from 'fs'
+import gm from 'gm'
+import {rootPath} from '../../config/default'
 class onLoad extends baseComponent{
 		constructor() {
 				super();
+				console.log('99999');
+				gm(`${rootPath}/uploads/test.png`).resize(240, 240).noProfile()
+				.write(`${rootPath}/uploads/resize.png`, function (err) {
+						console.log(err)
+				  	if (!err) console.log('done');
+				});
+
 		}
 		async onLoadFile(req,res,next) {
 				const form = new formidable.IncomingForm();
@@ -64,6 +73,14 @@ class onLoad extends baseComponent{
 										return 
 								}
 						})		
+				})
+		}
+		async onLoadImg(req, res, next) {
+				const form = new formidable.IncomingForm();
+				form.uploadDir = "./uploads";//修改文件上传默认的存储路径;
+				form.encoding = 'utf-8';     //设置编辑
+				form.parse(req, async (err, fields, files) => {
+
 				})
 		}
 		async downLoad(req,res,next) {
