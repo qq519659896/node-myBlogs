@@ -13,21 +13,23 @@ class announce extends baseComponent{
 		  this.addAnnounce = this.addAnnounce.bind(this);
 		}
 		async addAnnounce(req,res,next){
+				console.log(req.body, req.body.content);
 				const form = new formidable.IncomingForm();
+				form.encoding = 'utf-8';
 				form.parse(req,async (err, fields, files) => {
 						const { type, img, user_id } = fields;
 						let { content } = fields;
-						console.log(content,type,user_id,img);
-						try{
-							if(!content){
-								throw new Error('输入内容为空');
-							}else if(!user_id){
-								throw new Error('用户为空');
-							}
-						}catch(err){
-								console.log('参数错误',err);
+						console.log(content, type, user_id, img);
+						try{ 
+								if(!content){ 
+									throw new Error('输入内容为空');
+								}else if(!user_id){
+									throw new Error('用户为空');
+								}
+						}catch(err) {
+								console.log('参数错误', err);
 								res.send({
-									status:0,
+									status: 0,
 									type: 'ERROR_QUERY',
 									message: err.message
 								})
@@ -42,7 +44,7 @@ class announce extends baseComponent{
 								const update_time = dtime().format('YYYY-MM-DD HH:mm');
 								const tempUrl = `/public/article/${this.randomNumber()}.txt`;
 								//内容为文章的时候保存text文件
-								if(content.length > 200 && type == 3){
+								if(content.length > 200){
 									await fs.writeFile(`${rootPath+tempUrl}`, content, (err) => {
 										if(err){
 												console.log('生成txt失败');
@@ -60,18 +62,18 @@ class announce extends baseComponent{
 								res.send({
 										status: 1,
 										type: 'SUCCESS',
-										data: newAnnounce
+										data: newAnnounce,
 								});
 						} catch (err) {
 								console.log('数据库错误',err);
 								res.send({
 										status:3,
-										msg:'数据库错误'
+										msg:'数据库错误',
 								})
 						}
 				})
 		}
-		async getAnnounceList(req,res,next){
+		async getAnnounceList(req,res,next) {
 				const params = req.body;
 				const {PageIndex = 1,PageCount = 10,StartDate,EndDate,Sort,OrderType} = params;
 				try{
