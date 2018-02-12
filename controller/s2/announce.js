@@ -11,23 +11,25 @@ class announce extends baseComponent{
 		constructor(req,res,next){
 		  super();
 		  this.addAnnounce = this.addAnnounce.bind(this);
-
 		}
 		async addAnnounce(req,res,next){
+				console.log(req.body, req.body.content);
 				const form = new formidable.IncomingForm();
+				form.encoding = 'utf-8';
 				form.parse(req,async (err, fields, files) => {
-						const {content,type,img,user_id} = fields;
-						console.log(content,type,user_id,img);
-						try{
-							if(!content){
-								throw new Error('输入内容为空');
-							}else if(!user_id){
-								throw new Error('用户为空');
-							}
-						}catch(err){
-								console.log('参数错误',err);
+						const { type, img, user_id } = fields;
+						let { content } = fields;
+						console.log(content, type, user_id, img);
+						try{ 
+								if(!content){ 
+									throw new Error('输入内容为空');
+								}else if(!user_id){
+									throw new Error('用户为空');
+								}
+						}catch(err) {
+								console.log('参数错误', err);
 								res.send({
-									status:0,
+									status: 0,
 									type: 'ERROR_QUERY',
 									message: err.message
 								})
@@ -40,36 +42,38 @@ class announce extends baseComponent{
 								const announce_id = await this.getId('announce_id');
 								const announce_time = dtime().format('YYYY-MM-DD HH:mm');
 								const update_time = dtime().format('YYYY-MM-DD HH:mm');
+								const tempUrl = `/public/article/${this.randomNumber()}.txt`;
 								//内容为文章的时候保存text文件
-								if(content.length > 200 && type === 1){
-									fs.writeFile(`${rootPath}/${this.randomNumber()}.text`,content , (err) => {
-											if(err){
-													throw new Error(err)
-													return 
-											}
-										
+								if(content.length > 200){
+									await fs.writeFile(`${rootPath+tempUrl}`, content, (err) => {
+										if(err){
+												console.log('生成txt失败');
+												throw new Error(err)
+												return 
+										}
 									});
+									content = content.substring(0,200);
 								}
-
-								const newAnnounce = { user_id, type, content, announce_id, announce_time, update_time };
+								const txt_url = tempUrl;
+								const newAnnounce = { user_id, type, content, announce_id, announce_time, update_time, txt_url };
 								const creatAnnounce = new AnnounceModel(newAnnounce);
 								const resAnnounce = await creatAnnounce.save();
-								console.log(announce_time,update_time);
+								console.log( announce_time, update_time );
 								res.send({
-										status:1,
+										status: 1,
 										type: 'SUCCESS',
-										data:resAnnounce
+										data: newAnnounce,
 								});
 						} catch (err) {
 								console.log('数据库错误',err);
 								res.send({
 										status:3,
-										msg:'数据库错误'
+										msg:'数据库错误',
 								})
 						}
 				})
 		}
-		async getAnnounceList(req,res,next){
+		async getAnnounceList(req,res,next) {
 				const params = req.body;
 				const {PageIndex = 1,PageCount = 10,StartDate,EndDate,Sort,OrderType} = params;
 				try{
@@ -129,10 +133,32 @@ class announce extends baseComponent{
 							return; 
 						}
 				})
-				
 		}
-		async delAnnounce(req,res,next){
+		async getAnnounceArticle(req, res, next) {
 				const {announce_id} = req.query;
+				try{
+						if(!announce_id) {
+							 	throw new Error('参数错误');
+						}
+						const resData = await AnnounceModel.find({announce_id});
+						let {txt_url} = resData[0];
+						if(!txt_url) throw new Error('未找到数据');
+						const txtData = fs.readFileSync(`${rootPath+txt_url}`).toString(); //读取文件
+						res.send({
+								status:1,
+								msg:'成功',
+								data:txtData,
+						})
+				} catch (error) {
+						console.log('参数错误',error);
+						res.send({
+								status:3,
+								msg:error
+						})	
+				}
+		}
+		async delAnnounce(req,res,next) {
+				const { announce_id } = req.query;
 				if(!announce_id){
 						res.send({
 								status:2,
@@ -141,13 +167,13 @@ class announce extends baseComponent{
 						return 
 				}
 				try{
-						await AnnounceModel.findOneAndUpdate({announce_id},{$set:{is_del:true}});
+						await AnnounceModel.findOneAndUpdate({ announce_id },{ $set:{ is_del: true }});
 						res.send({
 								status:1,
 								msg:'删除成功'
 						})
 				}catch(err) {
-						console.log('数据库错误',err);
+						console.log('数据库错误', err);
 						res.send({
 								status:2,
 								msg:'数据库错误'

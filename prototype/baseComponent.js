@@ -3,6 +3,7 @@ import Ids from '../models/ids'
 import formidable from 'formidable'
 import path from 'path'
 import fs from 'fs'
+import dtime from 'time-formater'
 import qiniu from 'qiniu'
 import gm from 'gm'
 qiniu.conf.ACCESS_KEY = 'Ep714TDrVhrhZzV2VJJxDYgGHBAX-KmU1xV1SQdS';

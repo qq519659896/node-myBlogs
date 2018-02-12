@@ -5,10 +5,29 @@ import dtime from 'time-formater'
 import baseComponent from '../../prototype/baseComponent'
 import FileModel from '../../models/file/file'
 import path from 'path'
-import fs from 'fs' 
+import fs from 'fs'
+//import gm from 'gm'
+import imageMagick from 'imagemagick'
+import {rootPath} from '../../config/default'
 class onLoad extends baseComponent{
 		constructor() {
 				super();
+				console.log('99999');
+				var imdata = fs.readFileSync('E:/mrzhang/zhangGit/node-myBlogs/uploads/18213201711101001.jpg', 'binary');
+
+				// imageMagick.identify.path = "E:/ImageMagick-6.2.7-Q16/identify";  
+				// imageMagick.convert.path = "E:/ImageMagick-6.2.7-Q16/convert";
+    //     var timeStarted = new Date;	
+    // 		imageMagick.resize({
+				//   srcData: imdata,
+				//   width: 256
+				// }, function (err, stdout, stderr){
+				//   if (err) return console.error(err.stack || err);
+				//   console.log('real time taken for convert (with buffers): '+
+				//               ((new Date)-timeStarted)+' ms');
+				//   fs.writeFileSync('test-resized-io.jpg', stdout, 'binary');
+				//   console.log('resize(...) wrote "test-resized.jpg" ('+stdout.length+' Bytes)');
+				// })			
 		}
 		async onLoadFile(req,res,next) {
 				const form = new formidable.IncomingForm();
@@ -24,8 +43,6 @@ class onLoad extends baseComponent{
 								})
 								return 
 						}
-						//const filesData = files;
-						//const {}
 						const randomNumber = parseInt(Math.random() * 8999 +10000) + dtime().format('YYYYMMDDHHmm');
 						const file_type = path.extname(files.files.name);
 						const file_size = files.files.size;
@@ -64,6 +81,14 @@ class onLoad extends baseComponent{
 										return 
 								}
 						})		
+				})
+		}
+		async onLoadImg(req, res, next) {
+				const form = new formidable.IncomingForm();
+				form.uploadDir = "./uploads";//修改文件上传默认的存储路径;
+				form.encoding = 'utf-8';     //设置编辑
+				form.parse(req, async (err, fields, files) => {
+
 				})
 		}
 		async downLoad(req,res,next) {
